@@ -1,4 +1,4 @@
-import { Request, Response, RequestHandler, query } from 'express';
+import { Request, Response, RequestHandler } from 'express';
 import Article from '../models/article';
 
 export const getArticles: RequestHandler = async (
@@ -13,13 +13,23 @@ export const getArticles: RequestHandler = async (
     page: parseInt(req.query.page as string, 10),
   };
 
+  console.log(queries);
+  
+
   if (!queries.page || queries.page <= 0) {
     queries.page = 1;
   }
 
   const filter: any = {};
   if (queries.source) {
-    filter.source = { $regex: `^${queries.source}`, $options: 'i' };
+    let regex = '';
+    if (Array.isArray(queries.source)) {
+      regex = queries.source.join('|');
+    }
+    if (typeof queries.source === 'string' ) {
+      regex = queries.source;
+    }
+    filter.source = { $regex: `^${regex}`, $options: 'i' };
   }
   if (queries.dateFrom && queries.dateTo) {
     filter.date = { $gte: queries.dateFrom, $lte: queries.dateTo };
