@@ -7,14 +7,13 @@ export const getArticles: RequestHandler = async (
 ) => {
   const queries = {
     source: req.query.source,
-    dateFrom: req.query.dateFrom,
-    dateTo: req.query.dateTo,
+    dateFrom: parseInt(req.query.dateFrom as string, 10),
+    dateTo: parseInt(req.query.dateTo as string, 10),
     keyword: req.query.keyword,
     page: parseInt(req.query.page as string, 10),
   };
 
-  console.log(queries);
-  
+  // console.log(queries);
 
   if (!queries.page || queries.page <= 0) {
     queries.page = 1;
@@ -33,6 +32,12 @@ export const getArticles: RequestHandler = async (
   }
   if (queries.dateFrom && queries.dateTo) {
     filter.date = { $gte: queries.dateFrom, $lte: queries.dateTo };
+  }
+  if (queries.dateFrom && !queries.dateTo) {
+    filter.date = { $gte: queries.dateFrom };
+  }
+  if (!queries.dateFrom && queries.dateTo) {
+    filter.date = { $lte: queries.dateTo };
   }
   if (queries.keyword) {
     filter.$or = [
