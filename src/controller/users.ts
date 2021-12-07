@@ -4,6 +4,12 @@ import User from '../models/user';
 import { compare, hash } from '../utils/encryptor';
 import { jwtSign } from '../utils/jwtService';
 
+/**
+ * POST api/users/signup
+ * @param req 
+ * @param res 
+ * @returns 
+ */
 export const signUp: RequestHandler = async (req: Request, res: Response) => {
   const { userName, email, password } = req.body;
 
@@ -36,6 +42,12 @@ export const signUp: RequestHandler = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * POST api/users/login
+ * @param req 
+ * @param res 
+ * @returns 
+ */
 export const logIn: RequestHandler = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 

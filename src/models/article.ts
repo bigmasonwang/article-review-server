@@ -1,5 +1,11 @@
 import mongoose from 'mongoose';
 
+type Comment = {
+  commenterName: string;
+  commenterId: string;
+  date: string;
+  text: string;
+};
 interface IArticle {
   date: number;
   url: string;
@@ -8,6 +14,7 @@ interface IArticle {
   content: string;
   content_en: string;
   source: string;
+  comments: Comment[];
 }
 
 const ArticleSchema = new mongoose.Schema({
@@ -18,6 +25,14 @@ const ArticleSchema = new mongoose.Schema({
   content: String,
   content_en: String,
   source: String,
+  comments: [
+    {
+      commenterName: String,
+      commenterId: String,
+      date: Date,
+      text: String,
+    },
+  ],
 });
 
 const Article = mongoose.model<IArticle>('article', ArticleSchema);

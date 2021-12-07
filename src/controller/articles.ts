@@ -1,6 +1,13 @@
 import { Request, Response, RequestHandler } from 'express';
 import Article from '../models/article';
+import User from '../models/user';
 
+/**
+ * GET api/articles
+ * @param req
+ * @param res
+ * @returns
+ */
 export const getArticles: RequestHandler = async (
   req: Request,
   res: Response
@@ -25,7 +32,7 @@ export const getArticles: RequestHandler = async (
     if (Array.isArray(queries.source)) {
       regex = queries.source.join('|');
     }
-    if (typeof queries.source === 'string' ) {
+    if (typeof queries.source === 'string') {
       regex = queries.source;
     }
     filter.source = { $regex: `^${regex}`, $options: 'i' };
@@ -64,6 +71,71 @@ export const getArticles: RequestHandler = async (
   }
 };
 
+/**
+ * GET api/articles/:id
+ * @param req
+ * @param res
+ */
 export const getArticleById: RequestHandler = (req: Request, res: Response) => {
+  res.sendStatus(200);
+};
+
+/**
+ * POST api/articles/:articleId
+ * @param req
+ * @param res
+ */
+export const createComment: RequestHandler = async (
+  req: Request,
+  res: Response
+) => {
+  const { articleId } = req.params;
+  const { text } = req.body;
+  const { userId } = req;
+  let userName = 'Jhon Doe';
+  try {
+    const user = await User.findById(userId);
+    if (user) {
+      userName = user.userName;
+    }
+  } catch (error) {
+    res.status(401).json({ error: 'User not found!' });
+  }
+
+  try {
+    const article = await Article.findById(articleId);
+    const comment = {
+      commenterName: userName,
+      commenterId: userId,
+      text,
+      date: Date(),
+    };
+    article?.comments.push(comment);
+    await article?.save();
+    return res.sendStatus(200);
+  } catch (error) {
+    console.log(error);
+
+    res.sendStatus(500);
+  }
+};
+
+/**
+ * PATCH api/articles/:articleId/:commentId
+ * @param req
+ * @param res
+ */
+export const updateComment: RequestHandler = (req: Request, res: Response) => {
+  const { articleId, commentId } = req.params;
+
+  res.sendStatus(200);
+};
+
+/**
+ * DELETE api/articles/:articleId/:commentId
+ * @param req
+ * @param res
+ */
+export const destroyComment: RequestHandler = (req: Request, res: Response) => {
   res.sendStatus(200);
 };

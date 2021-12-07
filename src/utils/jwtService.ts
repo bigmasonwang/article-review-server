@@ -12,7 +12,7 @@ export interface JwtPayload extends jwt.JwtPayload {
  */
 export const jwtSign = (payload: JwtPayload): string => {
   const jwtSecret = process.env.JWT_SECRET as Secret;
-  const jwtExpires = process.env.JWT_EXPIRES_IN || '1m';
+  const jwtExpires = process.env.JWT_EXPIRES_IN || '30d';
   const token = jwt.sign(payload, jwtSecret, {
     expiresIn: jwtExpires,
   });
@@ -22,15 +22,15 @@ export const jwtSign = (payload: JwtPayload): string => {
 /**
  * verify jwt
  * @param token to be verified
- * @returns decoded payload
+ * @returns
  */
-export const jwtVerify = (token: string): JwtPayload => {
+export const jwtVerify = (token: string): JwtPayload | null => {
   const jwtSecret = process.env.JWT_SECRET as Secret;
-  let verified;
+  let payload;
   try {
-    verified = jwt.verify(token, jwtSecret) as JwtPayload;
+    payload = jwt.verify(token, jwtSecret) as JwtPayload;
   } catch (e) {
-    return verified as JwtPayload;
+    return null;
   }
-  return verified;
+  return payload;
 };
