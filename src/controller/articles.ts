@@ -99,7 +99,7 @@ export const createComment: RequestHandler = async (
       userName = user.userName;
     }
   } catch (error) {
-    res.status(401).json({ error: 'User not found!' });
+    res.status(400).json({ error: 'User not found!' });
   }
 
   try {
@@ -112,7 +112,7 @@ export const createComment: RequestHandler = async (
     };
     article?.comments.push(comment);
     await article?.save();
-    return res.sendStatus(200);
+    return res.sendStatus(201);
   } catch (error) {
     console.log(error);
 
@@ -125,10 +125,36 @@ export const createComment: RequestHandler = async (
  * @param req
  * @param res
  */
-export const updateComment: RequestHandler = (req: Request, res: Response) => {
+export const updateComment: RequestHandler = async (
+  req: Request,
+  res: Response
+) => {
   const { articleId, commentId } = req.params;
+  const { text } = req.body;
 
-  res.sendStatus(200);
+  try {
+    const article = await Article.findById(articleId);
+    if (!article) {
+      return res.status(400).json({ error: 'article not found' });
+    }
+
+    const comment = article.comments.filter(
+      (comment) => comment._id?.toString() === commentId
+    )[0];
+    if (!comment) {
+      return res.status(400).json({ error: 'comment not found' });
+    }
+
+    if (comment.commenterId !== req.userId) {
+      return res.status(403).json({ error: 'can only modify your comment' });
+    }
+
+    comment.text = text;
+    await article.save();
+    return res.sendStatus(201);
+  } catch (error) {
+    return res.sendStatus(500);
+  }
 };
 
 /**
@@ -136,6 +162,27 @@ export const updateComment: RequestHandler = (req: Request, res: Response) => {
  * @param req
  * @param res
  */
-export const destroyComment: RequestHandler = (req: Request, res: Response) => {
-  res.sendStatus(200);
+export const destroyComment: RequestHandler = async (
+  req: Request,
+  res: Response
+) => {
+  const { articleId, commentId } = req.params;
+
+  try {
+    const article = await Article.findById(articleId);
+    if (!article) {
+      return res.status(400).json({ error: 'article not found' });
+    }
+
+    article.comments = article.comments.filter(
+      (comment) =>
+        comment._id?.toString() !== commentId &&
+        comment.commenterId === req.userId
+    );
+
+    await article.save();
+    return res.sendStatus(204);
+  } catch (error) {
+    return res.sendStatus(500);
+  }
 };

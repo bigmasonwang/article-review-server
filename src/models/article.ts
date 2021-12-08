@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 type Comment = {
+  _id?: string;
   commenterName: string;
   commenterId: string;
   date: string;

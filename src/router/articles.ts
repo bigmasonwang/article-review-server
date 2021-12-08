@@ -16,8 +16,8 @@ router.get('/:id', getArticleById);
 
 router.post('/:articleId', authGuard, createComment);
 
-router.patch('/:articleId/:commentId', updateComment);
+router.patch('/:articleId/:commentId', authGuard, updateComment);
 
-router.delete('/:articleId/:commentId', destroyComment);
+router.delete('/:articleId/:commentId', authGuard, destroyComment);
 
 export default router;
