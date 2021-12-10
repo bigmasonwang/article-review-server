@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response, RequestHandler } from 'express';
+import logger from '../config/winston';
 import Article from '../models/article';
 import User from '../models/user';
 
@@ -81,7 +83,29 @@ export const getArticleById: RequestHandler = (req: Request, res: Response) => {
 };
 
 /**
- * POST api/articles/:articleId
+ * POST api/articles/:articleId/translation
+ * @param req
+ * @param res
+ */
+export const createTranslation: RequestHandler = async (
+  req: Request,
+  res: Response
+) => {
+  const { article } = req;
+  const { translation } = req.body;
+
+  try {
+    article.content_en = translation as string;
+    await article.save();
+    return res.sendStatus(201);
+  } catch (error: any) {
+    logger.log(error);
+    res.sendStatus(500);
+  }
+};
+
+/**
+ * POST api/articles/:articleId/comments
  * @param req
  * @param res
  */
@@ -113,15 +137,15 @@ export const createComment: RequestHandler = async (
     article?.comments.push(comment);
     await article?.save();
     return res.sendStatus(201);
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    logger.log(error);
 
     res.sendStatus(500);
   }
 };
 
 /**
- * PATCH api/articles/:articleId/:commentId
+ * PATCH api/articles/:articleId/comments/:commentId
  * @param req
  * @param res
  */
@@ -158,7 +182,7 @@ export const updateComment: RequestHandler = async (
 };
 
 /**
- * DELETE api/articles/:articleId/:commentId
+ * DELETE api/articles/:articleId/comments/:commentId
  * @param req
  * @param res
  */
