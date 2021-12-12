@@ -141,7 +141,7 @@ export const createComment: RequestHandler = async (
     };
     article?.comments.push(comment);
     await article?.save();
-    return res.sendStatus(201);
+    return res.status(201).json(article);
   } catch (error: any) {
     logger.log(error);
 
