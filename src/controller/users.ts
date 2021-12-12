@@ -75,3 +75,52 @@ export const logIn: RequestHandler = async (req: Request, res: Response) => {
     return res.status(500).json(error);
   }
 };
+
+export const sendArticles: RequestHandler = async (
+  req: Request,
+  res: Response
+) => {
+  const { sendToUserId, articleIds } = req.body;
+  try {
+    const user = await User.findById(sendToUserId);
+    if (!user) {
+      return res.status(401).json({ error: 'user not find' });
+    }
+    user.recievedArticles = articleIds;
+    await user.save();
+    return res.sendStatus(200);
+  } catch (error) {
+    logger.error(error);
+    return res.status(500).json(error);
+  }
+};
+
+export const getReceivedArticles: RequestHandler = async (
+  req: Request,
+  res: Response
+) => {
+  const { userId } = req;
+  try {
+    const user = await User.findById(userId).populate('recievedArticles');
+    if (!user) {
+      return res.status(401).json({ error: 'user not find' });
+    }
+    return res.status(200).json(user.recievedArticles);
+  } catch (error) {
+    logger.error(error);
+    return res.status(500).json(error);
+  }
+};
+
+export const getAllUsers: RequestHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const users = await User.find({});
+    return res.status(200).json(users);
+  } catch (error) {
+    logger.error(error);
+    return res.status(500).json(error);
+  }
+};
