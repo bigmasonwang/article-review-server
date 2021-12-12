@@ -92,12 +92,17 @@ export const createTranslation: RequestHandler = async (
   res: Response
 ) => {
   const { article } = req;
-  const { translation } = req.body;
+  const { title_en, content_en } = req.body;
 
   try {
-    article.content_en = translation as string;
+    if (title_en) {
+      article.title_en = title_en as string;
+    }
+    if (content_en) {
+      article.content_en = content_en as string;
+    }
     await article.save();
-    return res.sendStatus(201);
+    return res.status(201).json(article);
   } catch (error: any) {
     logger.log(error);
     res.sendStatus(500);

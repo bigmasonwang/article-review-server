@@ -58,8 +58,6 @@ export const logIn: RequestHandler = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
-    console.log(password);
-    console.log(user);
 
     const validPassword = await compare(password, user.password);
     if (!validPassword) {
