@@ -11,7 +11,7 @@ interface IUser {
 const UserSchema = new Schema({
   userName: String,
   email: String,
-  password: String,
+  password: { type: String, select: false },
   recievedArticles: [{ type: Schema.Types.ObjectId, ref: 'article' }],
 });
 

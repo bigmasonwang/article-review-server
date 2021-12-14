@@ -54,7 +54,7 @@ export const logIn: RequestHandler = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select('+password').exec();
     if (!user) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
@@ -76,11 +76,17 @@ export const logIn: RequestHandler = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * POST api/users/articles
+ */
 export const sendArticles: RequestHandler = async (
   req: Request,
   res: Response
 ) => {
   const { sendToUserId, articleIds } = req.body;
+  if (!sendToUserId) {
+    return res.status(400).json({ error: 'userId is need' });
+  }
   try {
     const user = await User.findById(sendToUserId);
     if (!user) {
@@ -95,6 +101,9 @@ export const sendArticles: RequestHandler = async (
   }
 };
 
+/**
+ * GET api/users/articles
+ */
 export const getReceivedArticles: RequestHandler = async (
   req: Request,
   res: Response
@@ -112,6 +121,9 @@ export const getReceivedArticles: RequestHandler = async (
   }
 };
 
+/**
+ * GET api/users
+ */
 export const getAllUsers: RequestHandler = async (
   req: Request,
   res: Response
